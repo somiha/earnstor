@@ -1,0 +1,222 @@
+<%- include('../partials/navigation.ejs') %>
+<div class="mx-5 rounded-md">
+
+    <div class="flex flex-wrap items-center justify-between gap-5 py-10 ">
+        <p class="text-xl font-semibold xl:text-2xl text-tColor2">Edit</p>
+    </div>
+
+
+
+    <div class="relative grid">
+
+        <div class=" xl:pr-5">
+            <div class="grid xl:grid-cols-2 gap-x-5">
+                <div class="flex flex-col">
+                    <p class="pt-5 text-lg font-semibold text-tColor2">Help Center Information</p>
+                    <div class="grid grid-cols-1 gap-5 mt-5 ">
+                        <form action="/update-helpcenter" method="POST">
+                            <div class="">
+                                <% for(let helpCenter of helpCenters){ %>
+
+                                <input
+                                    class="w-full input input-bordered focus:outline-none focus:shadow-outline hidden"
+                                    type="number" id="id" name="id" value="<%= helpCenter.id %>">
+
+
+
+                            </div>
+
+
+                            <div class="">
+
+                                <p class="mb-2 text-tColor3">Customer Service</p>
+                                <textarea
+                                    class="w-full textarea textarea-bordered focus:outline-none focus:shadow-outline"
+                                    id="customer_service" name="customer_service" rows="4" cols="50"
+                                    placeholder="Enter Customer Service"
+                                    required><%= helpCenter.customer_service %></textarea>
+
+
+
+                            </div>
+
+
+                            <div class="">
+                                <div class="pb-10">
+                                    <p class="mb-2 text-tColor3">Website</p>
+                                    <div class="flex items-center">
+                                        <input
+                                            class="w-full input input-bordered focus:outline-none focus:shadow-outline"
+                                            type="text" id="website" name="website" value="<%= helpCenter.website %>"
+                                            placeholder="Website" required>
+
+                                    </div>
+                                </div>
+
+                                <div class="pb-10">
+                                    <p class="mb-2 text-tColor3">Youtube</p>
+                                    <div class="flex items-center">
+                                        <input
+                                            class="w-full input input-bordered focus:outline-none focus:shadow-outline"
+                                            type="text" id="youtube" value="<%= helpCenter.youtube %>" name="youtube"
+                                            placeholder="Youtube" required>
+                                    </div>
+                                </div>
+
+                                <div class="">
+
+                                    <div class="pb-10 ">
+                                        <p class="mb-2 text-tColor3">Facebook</p>
+                                        <input
+                                            class="w-full input input-bordered focus:outline-none focus:shadow-outline"
+                                            type="text" id="facebook" name="facebook" value="<%= helpCenter.youtube %>"
+                                            placeholder="Facebook" required>
+                                    </div>
+
+                                    <div class="pb-10 ">
+                                        <p class="mb-2 text-tColor3">Instagram</p>
+                                        <input
+                                            class="w-full input input-bordered focus:outline-none focus:shadow-outline"
+                                            type="text" id="instagram" name="instagram"
+                                            value="<%= helpCenter.instagram %>" placeholder="Instagram" required>
+                                    </div>
+
+                                </div>
+                                <div class="flex flex-wrap items-center self-start gap-5 mb-5 pr-15">
+
+                                    <button type="submit" class="text-white btn btn-primary">Save</button>
+                                </div>
+
+
+                                <% } %>
+                            </div>
+                        </form>
+
+                        <p class="pt-5 pb-10 text-lg font-semibold text-tColor2">Other Information</p>
+
+                        <% for(let refer of refers){ %>
+                        <form action="/update-refer-point" method="POST">
+
+                            <input class="w-full input input-bordered focus:outline-none focus:shadow-outline hidden"
+                                type="number" id="id" name="id" value="<%= refer.id %>">
+
+                            <div class="pb-10 ">
+                                <p class="mb-2 text-tColor3">Refer</p>
+                                <input class="w-full input input-bordered focus:outline-none focus:shadow-outline"
+                                    type="number" id="points" name="points" value="<%= refer.points %>"
+                                    placeholder="Points" required>
+                            </div>
+                            <div class="flex flex-wrap items-center self-start gap-5 mb-5 pr-15">
+
+                                <button type="submit" class="text-white btn btn-primary"
+                                    onclick="location.reload()">Save</button>
+                            </div>
+                        </form>
+
+                        <% } %>
+
+                        <% for(let registrationFee of registrationFees ){ %>
+                        <form action="/update-registration-fee" method="POST">
+                            <div class="pb-10 ">
+                                <p class="mb-2 text-tColor3">Registration Fees</p>
+                                <input class="w-full input input-bordered focus:outline-none focus:shadow-outline"
+                                    type="number" id="prices" name="prices" value="<%= registrationFee.price %>"
+                                    placeholder="Prices" required>
+                            </div>
+
+                            <div class="flex flex-wrap items-center self-start gap-5 mb-5 pr-15">
+
+                                <button type="submit" class="text-white btn btn-primary" ">Save</button>
+                            </div>
+
+                               
+                         </form>
+                        <% } %>
+
+                        <% for(let minVideos of minVideo ){ %>
+                        <form action=" /update-min-video" method="POST">
+                                    <div class="pb-10 ">
+                                        <p class="mb-2 text-tColor3">Minimum Video Seen</p>
+                                        <input
+                                            class="w-full input input-bordered focus:outline-none focus:shadow-outline"
+                                            type="number" id="min_refer" name="min_refer"
+                                            value="<%= minVideos.min_refer %>" placeholder="Minimum Video Seen"
+                                            required>
+                                    </div>
+
+                                    <div class="flex flex-wrap items-center self-start gap-5 mb-5 pr-15">
+
+                                        <button type="submit" class="text-white btn btn-primary" ">Save</button>
+                                                    </div>
+                        
+                                                       
+                                                 </form>
+                                                <% } %>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+
+
+
+<!-- Header Section Script -->
+<script>
+    // Menu toggle button 
+    const toggleButton = document.getElementById(" toggle-button"); const
+        toggleMenu = document.getElementById("toggle-menu"); var toggleCounter = 1;
+    toggleButton.onclick = function () {
+        toggleCounter++; if (toggleCounter %
+            2 == 0) {
+                toggleMenu.classList.remove("hidden");
+            toggleMenu.classList.add("grid");
+        } else {
+            toggleMenu.classList.remove("grid"); toggleMenu.classList.add("hidden");
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+                                            <script>
+                                                const tables = document.querySelectorAll('.table-collapse');
+                                                window.onclick = function (event) {
+                                                    for (let table of tables) {
+                                                        if (event.target == table) {
+                                                            table.classList.toggle('hidden');
+                                                        }
+                                                    }
+                                                };
+                                            </script>
+
+
+
+                                            </body>
+
+                                            </html>

@@ -1,0 +1,403 @@
+<%- include('../partials/navigation.ejs') %>
+
+<div class="px-5 pt-5 rounded-md ">
+
+    <div class="flex justify-between items-center flex-wrap gap-5 py-10">
+        <p class="text-xl xl:text-2xl font-semibold text-tColor2">operator Image</p>
+
+    </div>
+
+
+    <dialog id="my_modal_6" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+
+            <div class="flex flex-col items-center justify-center">
+                <h3 class="font-bold text-lg">Are you sure to delete?</h3>
+                <div class="flex items-center m-4">
+                    <button class="btn btn-md bg-red-600 text-white px-5 mr-3">Delete</button>
+                    <button class="btn btn-md bg-gray-600 text-white px-5 ml-3">Cancel</button>
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </dialog>
+    <div class="mt-5">
+
+        <div class="flex flex-col justify-around">
+            <div class="w-7/12 flex justify-end ml-5">
+                <button class="primary-btn" onclick="my_modal_3.showModal()">Add operator</button>
+                <dialog id="my_modal_3" class="modal">
+                    <div class="modal-box">
+
+                        <form method="dialog">
+                            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                        <form action="/add-operators" method="POST" enctype="multipart/form-data">
+                            <h3 class="font-bold text-lg">operator</h3>
+                            <div class="flex flex-col items-center mt-4">
+                                <div id="imagePreview" class="w-56 h-40 border border-white-300 mb-7">
+                                    <!-- Initially, the demo image is displayed here -->
+                                    <img id="selected-image" src="#" alt=""
+                                        class="hidden w-full h-full object-cover object-center" />
+                                    <img id="previewImage" src="/images/img/about.jpg" alt="Demo Image"
+                                        style="display: block;" class="w-full h-full object-cover object-center" />
+
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="mb-5">
+                                        <p class="text-tColor3">Operator Name</p>
+                                        <input
+                                            class="w-full input input-bordered focus:outline-none focus:shadow-outline mt-1"
+                                            type="text" id="name" name="name" placeholder="Operator Name">
+                                    </div>
+
+                                    <div class="mb-5">
+                                        <p class="text-tColor3">Is Disabled</p>
+                                        <select name="is_disabled" id="is_disabled"
+                                            class="w-full input input-bordered focus:outline-none focus:shadow-outline mt-1">
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                    <input type="file" id="operator-image" name="operator-image"
+                                        class="w-full file-input file-input-bordered file-input-primary max-w-xs mb-5 mt-5"
+                                        accept="image/*" />
+                                </div>
+
+
+
+
+                                <button type="submit" id="submitButton" class="primary-btn">Submit</button>
+                            </div>
+                        </form>
+
+
+
+                    </div>
+                </dialog>
+            </div>
+            <dialog id="my_modal_5" class="modal">
+                <div class="modal-box">
+                    <form method="dialog">
+                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                    </form>
+                    <form action="/update-operators" method="POST" enctype="multipart/form-data">
+                        <h3 class="font-bold text-lg"> Edit operator</h3>
+                        <div class="flex flex-col items-center mt-4">
+                            <div id="imagePreview" class="w-56 h-40 border border-white-300 mb-7">
+                                <img id="edit-selected-image" src="#" alt=""
+                                    class="hidden w-full h-full object-cover object-center" />
+                                <img id="edit-operator-image-preview" src="" alt="Demo Image"
+                                    class="w-full h-full object-cover object-center" />
+                            </div>
+                            <div class="flex flex-col">
+                                <div class="mb-5">
+
+                                    <p class="text-tColor3">Operator Name</p>
+                                    <input
+                                        class="w-full input input-bordered focus:outline-none focus:shadow-outline mt-5"
+                                        type="text" id="edit_name" name="edit_name" placeholder="Operator Name">
+                                </div>
+
+                                <div class="mb-5">
+                                    <p class="text-tColor3">Is Disabled</p>
+                                    <select name="edit_is_disabled" id="edit_is_disabled"
+                                        class="w-full input input-bordered focus:outline-none focus:shadow-outline mt-5">
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+
+                                    </select>
+                                </div>
+                                <input id="edit-operator-image" name="operator-image" type="file"
+                                    class="file-input file-input-bordered file-input-primary w-full max-w-xs mb-5"
+                                    accept="image/*" />
+                            </div>
+                            <input id="id" name="id" value="" class="hidden" />
+                            <input id="previous_operator_image" name="previous_operator_image" class="hidden" />
+                            <button id="editSubmitButton" class="primary-btn" disabled>Submit</button>
+                        </div>
+                    </form>
+
+
+
+                </div>
+            </dialog>
+            <div class="bg-white pt-5 overflow-x-scroll md:overflow-hidden px-5">
+                <table class="table text-xs md:text-sm profile-table w-[90%] md:w-6/12">
+                    <thead>
+                        <tr>
+                            <th>OPERATOR NAME</th>
+                            <th>OPERATOR IMAGE</th>
+                            <th>IS DISABLED</th>
+                            <th>ACTION</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% for (let operator of paginatedOperators) { %>
+
+                        <tr>
+                            <td style="padding-top: 0; padding-bottom: 0;">
+                                <div class="flex items-center mr-1">
+                                    <%= operator.name %>
+
+                                </div>
+                            </td>
+                            <td style="padding-top: 0; padding-bottom: 0;">
+                                <div class="flex items-center mr-1">
+                                    <img src="<%= operator.logo %>" alt="" height="auto" width="80px">
+
+                                </div>
+                            </td>
+                            <td style="padding-top: 0; padding-bottom: 0;">
+                                <div class="flex items-center mr-1">
+                                    <%= operator.is_disabled ? 'Yes' : 'No' %>
+
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1 ml-100">
+                                    <button class="table-button btn btn-xs btn-outline btn-primary"
+                                        onclick="openEditOperatorModal('<%= operator.name %>','<%= operator.logo %>','<%= operator.is_disabled %>', '<%= operator.id %>')">
+                                        <i class="fa fa-pencil"></i>
+
+
+                                        <button class="table-button btn btn-xs btn-outline btn-primary"
+                                            onclick="confirmDeleteOperator('<%= operator.id %>')">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+
+
+                        <% } %>
+
+
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- Page Select -->
+            <div class="flex flex-col justify-between gap-2 py-5 xl:flex-row xl:items-center">
+                <p class="text-xs text-center xl:text-sm text-tColor">
+                    Show <%= paginatedOperators.length %> from <%= operators.length %> operators
+                </p>
+
+                <div
+                    class="grid content-center grid-flow-col gap-3 ml-auto mr-auto font-semibold scale-75 xl:scale-100 xl:mr-0 xl:text-sm text-tColor">
+                    <% if (page > 1) { %>
+                    <a class="flex items-center justify-center w-6 h-6 rounded" href="/operators?page=<%= page - 1 %>">
+                        <svg width="6" height="10" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.125 0.75L0.875 7L7.125 13.25" stroke="#84818A" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <% } %>
+
+                    <% const maxPagesToShow = 8;
+                               const startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
+                               const endPage = Math.min(
+                                   Math.ceil(operators.length / operatorsPerPage),
+                                   startPage + maxPagesToShow - 1
+                               );
+                    
+                               for (let i = startPage; i <= endPage; i++) { %>
+                    <a class=" h-6 w-6 rounded flex items-center justify-center <%= i === page ? 'bg-blue-100 text-primaryColor' : '' %>"
+                        href="/operators?page=<%= i %>"><%= i %></a>
+                    <% } %>
+
+                    <% if (page < Math.ceil(operators.length / operatorsPerPage)) { %>
+                    <a class="flex items-center justify-center w-6 h-6 rounded" href="/operators?page=<%= page + 1 %>">
+                        <svg width="6" height="10" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.875 0.75L7.125 7L0.875 13.25" stroke="#84818A" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <% } %>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<script>
+    const operatorImageInput = document.getElementById('operator-image');
+    const previewImage = document.getElementById('previewImage');
+    const selectedImage = document.getElementById("selected-image");
+    const submitButton = document.getElementById("submitButton");
+
+    operatorImageInput.addEventListener('change', function () {
+        previewImage.style.display = "none";
+        if (this.files && this.files[0]) {
+            selectedImage.classList.remove("hidden");
+            selectedImage.src = URL.createObjectURL(operatorImageInput.files[0]);
+            submitButton.removeAttribute("disabled");
+        } else {
+            submitButton.setAttribute("disabled", "true");
+        }
+    });
+</script>
+
+<script>
+    const editOperatorImageInput = document.getElementById('edit-operator-image');
+    const editPreviewImage = document.getElementById('edit-operator-image-preview');
+    const editSelectedImage = document.getElementById("edit-selected-image");
+    const editSubmitButton = document.getElementById("editSubmitButton");
+
+    editOperatorImageInput.addEventListener('change', function () {
+        editPreviewImage.style.display = "none";
+        if (this.files && this.files[0]) {
+            editSelectedImage.classList.remove("hidden");
+            editSelectedImage.src = URL.createObjectURL(editOperatorImageInput.files[0]);
+            editSubmitButton.removeAttribute("disabled");
+        } else {
+            editSubmitButton.setAttribute("disabled", "true");
+        }
+    });
+</script>
+
+
+
+<!-- Header Section Script -->
+<script>
+    // Menu toggle button 
+    const toggleButton = document.getElementById("toggle-button");
+    const toggleMenu = document.getElementById("toggle-menu");
+    var toggleCounter = 1;
+    toggleButton.onclick = function () {
+        toggleCounter++;
+        if (toggleCounter % 2 == 0) {
+            toggleMenu.classList.remove("hidden");
+            toggleMenu.classList.add("grid");
+        }
+        else {
+            toggleMenu.classList.remove("grid");
+            toggleMenu.classList.add("hidden");
+        }
+    }
+
+
+</script>
+
+
+<!-- Accordion Script -->
+<script>
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+    const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+    accordionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const accordionCollapse = button.nextElementSibling;
+            button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false');
+            accordionCollapse.classList.toggle('hidden');
+        });
+    });
+
+    // Set all accordion items to collapsed state by default
+    document.querySelectorAll('.menu-collapse').forEach(collapse => {
+        collapse.classList.add('hidden');
+    });
+
+    document.addEventListener('click', function (e) {
+        const accordionMenu = document.getElementById('yourAccordionMenuId'); // Replace with your actual ID
+        const accordionButtons = document.getElementById('yourAccordionButtonsId'); // Replace with your actual ID
+
+        if (accordionMenu && accordionButtons) {
+            if (!accordionMenu.contains(e.target) && !accordionButtons.contains(e.target)) {
+                accordionMenu.classList.add('hidden');
+            }
+        }
+    });
+
+</script>
+
+<script>
+    const tables = document.querySelectorAll('.table-collapse');
+    window.onclick = function (event) {
+        for (let table of tables) {
+            if (event.target == table) {
+                table.classList.toggle('hidden');
+            }
+        }
+    };
+</script>
+
+
+
+<script>
+    async function openEditOperatorModal(name, imageUrl, is_disabled, id) {
+        console.log(imageUrl, id);
+        document.getElementById('edit-operator-image-preview').src = imageUrl;
+        document.getElementById("id").value = id;
+        document.getElementById("edit_name").value = name;
+        document.getElementById("is_disabled").value = is_disabled;
+        document.getElementById("previous_operator_image").value = imageUrl;
+        // Open the dialog
+        const editOperatorModal = document.getElementById('my_modal_5');
+        editOperatorModal.showModal();
+    }
+</script>
+
+<script>
+    function confirmDeleteOperator(operatorId) {
+        const dialog = document.getElementById('my_modal_6');
+        const deleteButton = dialog.querySelector('.bg-red-600');
+        const cancelButton = dialog.querySelector('.bg-gray-600');
+        deleteButton.onclick = async () => {
+            dialog.close();
+
+            try {
+                const response = await fetch(`/delete-operator?id=${operatorId}`, {
+                    method: 'POST',
+                });
+
+                if (response.status === 200) {
+
+                    location.reload();
+                } else {
+                    console.error('Error deleting operator');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        cancelButton.onclick = () => {
+            dialog.close();
+        };
+
+        dialog.showModal();
+    }
+</script>
+
+</body>
+
+</html>

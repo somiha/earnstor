@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title><%= title %></title>
+        <link rel="stylesheet" href="/css/output.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.8.0/html2pdf.bundle.min.js"
+            integrity="sha512-w3u9q/DeneCSwUDjhiMNibTRh/1i/gScBVp2imNVAMCt6cUHIw6xzhzcPFIaL3Q1EbI2l+nu17q2aLJJLo4ZYg=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+    </head>
+
+    <body class="font-sans">
+        <section class=" max-w-[1920px] ml-auto mr-auto">
+
+            <!-- Navigation Menu -->
+            <div class="relative">
+
+                <nav
+                    class="bg-white fixed min-[2000px]:absolute top-0 flex flex-row xl:flex-col justify-between max-h-[800px] custom-container shadow-sm xl:shadow-none w-full xl:w-fit z-10">
+
+                    <div class="">
+                        <a href="/"><img class="h-16 xl:my-5 xl:ml-4 xl:h-16" src="/images/img/Logo.png" alt=""></a>
+
+                        <div class="bg-white xl:bg-transparent hidden xl:grid gap-3 absolute xl:static top-12 right-0 z-10 rounded-sm px-5 py-5 xl:py-0 2xl:py-5 max-h-[800px] xl:max-h-[450px] 2xl:max-h-[700px] overflow-y-auto scroll-h min-w-[195px] scroll-smooth shadow-md xl:shadow-none"
+                            id="toggle-menu">
+
+                            <!-- <button class="accordion-button menu-list">
+                                <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                                <span>Finace</span>
+                                <i class="ml-auto fa-solid fa-chevron-down"></i>
+                            </button>
+
+                            <ul class="menu-collapse">
+                                <li><a href="dashboard-earningHistory.html">Earning History</a></li>
+                                <li><a href="dashboard-comissionHistory.html">Comission History</a></li>
+                                <li><a href="dashboard-withdrawRequest.html">Withdraw History</a></li>
+                                <li><a href="dashboard-companyCosts.html">Company Costing</a></li>
+                            </ul> -->
+
+                            <!-- <button class="accordion-button menu-list">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                                <span>Product</span>
+                                <i class="ml-auto fa-solid fa-chevron-down"></i>
+                            </button>
+
+                            <ul class="menu-collapse">
+                                <li><a href="/">All Users</a></li>
+                                <li><a href="#">Categories</a></li>
+                            </ul> -->
+
+
+                            <a class="menu-list" href="/">
+                                <i class="text-xs fa-solid fa-user-group"></i>
+                                <span>All Users</span>
+                            </a>
+
+                            <a class="menu-list" href="/leaderboard">
+                                <i class="text-xs fa-solid fa-user"></i>
+                                <span>Leaderboard</span>
+                            </a>
+
+                            <a class="menu-list" href="/videos">
+                                <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                                <span>Video</span>
+                            </a>
+
+                            <a class="menu-list" href="/youtube-videos">
+                                <i class="fa-solid fa-video"></i>
+                                <span>Youtube Video</span>
+                            </a>
+
+                            <a class="menu-list" href="/pending-payment">
+                                <i class="fa-solid fa-address-book"></i>
+                                <span>Payment</span>
+                            </a>
+                            <a class="menu-list" href="/withdraw-history">
+                                <i class="fa-solid fa-gear"></i>
+                                <span>Withdraw</span>
+                            </a>
+                            <a class="menu-list" href="/recharge-history">
+                                <i class="fa-solid fa-cny"></i>
+                                <span>Recharge</span>
+                            </a>
+
+                            <a class="menu-list" href="/breaking-news">
+                                <i class="fa-solid fa-envelope-open-text"></i>
+                                <span>Breaking News</span>
+                            </a>
+
+                            <a class="menu-list" href="/settings">
+                                <i class="fa-solid fa-table-list"></i>
+                                <span>Settings</span>
+                            </a>
+                            <a class="menu-list" href="/banners">
+                                <i class="fa-solid fa-flag"></i>
+                                <span>Banners</span>
+                            </a>
+                            <a class="menu-list" href="/operators">
+                                <i class="fa-solid fa-flag"></i>
+                                <span>Operators</span>
+                            </a>
+                            <a class="menu-list" href="/admin/logout">
+                                <i class="fa-solid fa-sign-out"></i>
+                                <span>Logout</span>
+                            </a>
+
+                            <!-- <button class="accordion-button menu-list">
+                                <i class="fa-solid fa-gear"></i>
+                                <span>Admin Profile</span>
+                                <i class="ml-auto fa-solid fa-chevron-down"></i>
+                            </button>
+
+                            <ul class="menu-collapse">
+                                <li><a href="#">Sub Admin Profile</a></li>
+                                <li><a href="#">Editor Profile</a></li>
+                            </ul>
+
+                            <a class="menu-list" href="#">
+                                <i class="fa-solid fa-envelope-open-text"></i>
+                                <span>Message</span>
+                            </a>
+
+                            <a class="menu-list" href="#">
+                                <i class="fa-solid fa-table-list"></i>
+                                <span>Orders</span>
+                            </a>
+
+                            <a class="menu-list" href="#">
+                                <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                                <span>Delivery Charge</span>
+                            </a>
+
+                            <a class="menu-list" href="#">
+                                <i class="fa-solid fa-sign-out"></i>
+                                <span>Logout</span>
+                            </a> -->
+
+
+
+                        </div>
+                    </div>
+
+                    <!-- Logout Menu Section -->
+                    <div class="flex items-center px-0 xl:px-4 xl:py-3 xl:mt-10">
+                        <!-- <a class="menu-list text-primaryColor hover:bg-transparent" href="#">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M15.75 9V5.25C15.75 4.65326 15.5129 4.08097 15.091 3.65901C14.669 3.23705 14.0967 3 13.5 3H7.5C6.90326 3 6.33097 3.23705 5.90901 3.65901C5.48705 4.08097 5.25 4.65326 5.25 5.25V18.75C5.25 19.3467 5.48705 19.919 5.90901 20.341C6.33097 20.7629 6.90326 21 7.5 21H13.5C14.0967 21 14.669 20.7629 15.091 20.341C15.5129 19.919 15.75 19.3467 15.75 18.75V15M18.75 15L21.75 12M21.75 12L18.75 9M21.75 12H9"
+                                    stroke="#29844B" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+
+
+                            <span class="hidden md:block">Log Out</span>
+                        </a> -->
+
+                        <button class="block xl:hidden" id="toggle-button">
+                            <svg class="-mr-[1px]" height="24px" width="24px" fill="none" stroke="currentColor"
+                                stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path>
+                            </svg>
+                        </button>
+                        </a>
+
+                    </div>
+
+
+
+                </nav>
+
+            </div>
+
+
+
+
+            <!-- Right Side Section -->
+            <div class="w-full px-0 py-2 mt-16 ml-auto xl:w-5/6 xl:px-5 xl:mt-0">
+
+
+                <!-- Project Overview Header -->
+
+                <!-- <div class="flex items-center justify-between gap-4 px-5 py-2 xl:py-5 "> -->
+                <!-- Search Box -->
+                <!-- <div class="relative py-2 pl-6 pr-3 bg-white"> -->
+                <!-- <input class="py-2 pr-3 pl-6 focus:outline-none max-w-[180px]" type="text"
+                            placeholder="Search...">
+                        <i
+                            class="absolute left-0 -translate-y-1/2 fa-solid fa-magnifying-glass top-1/2 text-tColor"></i> -->
+                <!-- </div> -->
+
+                <!-- Notification & User -->
+                <!-- <div class="flex items-center gap-3 text-xs xl:text-base xl:gap-5">
+
+                        <a class="" href="#">
+                            <svg width="24" height="24" fill="#84818A" stroke-width="1.5" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0">
+                                </path>
+                            </svg>
+                        </a>
+
+                        <a href="#" class="flex items-center gap-2">
+                            <img class="w-6 h-6" src="/images/img/user.png" alt="">
+                            <p class="text-sm font-semibold">Maxbert</p>
+                            <i class="-mt-2 fa-solid fa-sort-down text-tColor"></i>
+                        </a>
+                    </div> -->
+
+                <!-- </div> -->

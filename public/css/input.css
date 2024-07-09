@@ -1,0 +1,60 @@
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+	.menu-btn {
+		@apply px-6 py-2 font-medium bg-white hover:bg-gray-100 text-tColor rounded-3xl;
+	}
+
+	.menu-icons {
+		@apply rounded-[50%] hover:bg-gray-100 px-4 py-3;
+	}
+
+	.slider-arrow {
+		@apply border-2 border-gray-300 rounded-[50%] py-[12px] px-[13px];
+	}
+
+	.primary-btn {
+		@apply px-6 py-2 text-white duration-75 rounded bg-primaryColor hover:bg-primaryColorShade;
+	}
+
+	/* .profile-table th {
+		@apply pb-3 text-xs font-normal text-left border-b text-tColor;
+	} */
+
+	.profile-table td {
+		@apply py-3 text-left border-b;
+	}
+
+	.profile-table tbody tr:last-child td {
+		@apply border-b-0;
+	}
+
+	.order-details th {
+		@apply pb-3 font-semibold border-b-2 text-start text-tColor;
+	}
+
+	.order-details td {
+		@apply py-3 font-semibold border-b-2;
+	}
+
+	.menu-list {
+		@apply flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 rounded;
+	}
+
+	.menu-list:hover,
+	.menu-collapse > li:hover {
+		@apply text-primaryColor;
+	}
+
+	.menu-list button > i {
+		@apply w-5;
+	}
+
+	.menu-collapse {
+		@apply text-sm grid gap-5 ml-10 pl-[2px] min-w-[115px];
+	}
+}

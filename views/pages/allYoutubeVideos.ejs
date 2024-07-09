@@ -1,0 +1,370 @@
+<%- include('../partials/navigation.ejs') %>
+
+<div class="px-5 pt-5 rounded-md ">
+
+    <div class="flex justify-between items-center flex-wrap gap-5 py-10">
+        <p class="text-xl xl:text-2xl font-semibold text-tColor2">Youtube Video</p>
+
+    </div>
+
+
+    <dialog id="my_modal_6" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+
+            <div class="flex flex-col items-center justify-center">
+                <h3 class="font-bold text-lg">Are you sure to delete?</h3>
+                <div class="flex items-center m-4">
+                    <button class="btn btn-md bg-red-600 text-white px-5 mr-3">Delete</button>
+                    <button class="btn btn-md bg-gray-600 text-white px-5 ml-3">Cancel</button>
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </dialog>
+    <div class="mt-5">
+
+        <div class="flex flex-col justify-around">
+            <div class="w-7/12 flex justify-end ml-5">
+                <button class="primary-btn" onclick="my_modal_3.showModal()">Add youtube video</button>
+                <dialog id="my_modal_3" class="modal">
+                    <div class="modal-box">
+
+                        <form method="dialog">
+                            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                        <form action="/add-youtube-videos" method="POST">
+                            <h3 class="font-bold text-lg">youtube video</h3>
+                            <div class="flex flex-col items-center mt-4">
+                                <!-- <div id="imagePreview" class="w-56 h-40 border border-white-300 mb-7">
+                                  
+                                    <img id="selected-image" src="#" alt=""
+                                        class="hidden w-full h-full object-cover object-center" />
+                                    <img id="previewImage" src="/images/img/about.jpg" alt="Demo Image"
+                                        style="display: block;" class="w-full h-full object-cover object-center" />
+                                </div>
+                                <input type="file" id="video" name="video"
+                                    class="file-input file-input-bordered file-input-primary w-full max-w-xs mb-5"
+                                    accept="video/*" /> -->
+                                <div class="flex items-center mb-2">
+                                    <input class="w-full input input-bordered focus:outline-none focus:shadow-outline"
+                                        type="text" id="video" name="video" placeholder="Video Url">
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input class="w-full input input-bordered focus:outline-none focus:shadow-outline"
+                                        type="number" id="point" name="point" placeholder="Points">
+                                </div>
+                                <button id="submitButton" class="primary-btn">Submit</button>
+                            </div>
+                        </form>
+
+
+
+                    </div>
+                </dialog>
+            </div>
+
+            <div class="bg-white pt-5 overflow-x-scroll md:overflow-hidden px-5">
+                <table class="table text-xs md:text-sm profile-table w-[90%] md:w-6/12">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>YOUTUBE VIDEO</th>
+                            <th>POINT</th>
+                            <th>TOTAL EARN</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                            <th>STATUS UPDATE</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% for (let video of paginatedVideos) { %>
+
+                        <tr>
+                            <td style="padding-top: 0; padding-bottom: 0;">
+                                <div class="flex items-center mr-1">
+                                    <p><%= video.id %></p>
+                                </div>
+                            </td>
+
+                            <td style="padding-top: 0; padding-bottom: 0;">
+                                <div class="flex items-center mr-1">
+                                    <% 
+                                        let videoId;
+                                        if (video.video_url.includes('youtu.be')) {
+                                            videoId = video.video_url.split('youtu.be/')[1];
+                                        } else if (video.video_url.includes('watch?v=')) {
+                                            videoId = video.video_url.split('watch?v=')[1];
+                                        } else if (video.video_url.includes('embed/')) {
+                                            videoId = video.video_url.split('embed/')[1];
+                                        }
+                                    
+                                        // If videoId contains additional parameters, remove them
+                                        if (videoId && videoId.includes('?')) {
+                                            videoId = videoId.split('?')[0];
+                                        }
+                                    %>
+                                    <iframe width="320" height="240" src="https://www.youtube.com/embed/<%= videoId %>"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+                                </div>
+
+
+                            </td>
+                            <td style="padding-top: 0; padding-bottom: 0;">
+                                <div class="flex items-center mr-1">
+                                    <p><%= video.points %></p>
+
+                                </div>
+                            </td>
+                            <td style="padding-top: 0; padding-bottom: 0;">
+                                <div class="flex items mr-1">
+                                    <p><%= video.totalEarned || 0 %></p>
+                                </div>
+                            </td>
+                            <td style="padding-top: 0; padding-bottom: 0;">
+                                <div class="flex items mr-1">
+                                    <p><%= video.status === 1 ? 'Active' : 'Inactive' %></p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1 ml-100">
+
+                                    <button class="table-button btn btn-xs btn-outline btn-primary"
+                                        onclick="confirmDeleteBanner('<%= video.id %>')">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+
+                                </div>
+
+                            </td>
+                            <td>
+                                <form action="/youtube-update-status" method="GET">
+                                    <input type="hidden" name="id" value="<%= video.id %>">
+                                    <input type="hidden" name="status" value="<%= video.status === 1 ? 0 : 1 %>">
+                                    <button type="submit" class="table-button btn btn-xs btn-outline btn-primary">
+                                        <%= video.status === 1 ? 'Deactivate' : 'Activate' %>
+                                    </button>
+                                </form>
+                            </td>
+
+                        </tr>
+
+
+
+
+                        <% } %>
+
+
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- Page Select -->
+            <div class="flex flex-col justify-between gap-2 py-5 xl:flex-row xl:items-center">
+                <p class="text-xs text-center xl:text-sm text-tColor">
+                    Show <%= paginatedVideos.length %> from <%= videos.length %> videos
+                </p>
+
+                <div
+                    class="grid content-center grid-flow-col gap-3 ml-auto mr-auto font-semibold scale-75 xl:scale-100 xl:mr-0 xl:text-sm text-tColor">
+                    <% if (page > 1) { %>
+                    <a class="flex items-center justify-center w-6 h-6 rounded"
+                        href="/youtube-videos?page=<%= page - 1 %>">
+                        <svg width="6" height="10" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.125 0.75L0.875 7L7.125 13.25" stroke="#84818A" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <% } %>
+
+                    <% const maxPagesToShow = 8;
+                               const startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
+                               const endPage = Math.min(
+                                   Math.ceil(videos.length / videosPerPage),
+                                   startPage + maxPagesToShow - 1
+                               );
+                    
+                               for (let i = startPage; i <= endPage; i++) { %>
+                    <a class=" h-6 w-6 rounded flex items-center justify-center <%= i === page ? 'bg-blue-100 text-primaryColor' : '' %>"
+                        href="/youtube-videos?page=<%= i %>"><%= i %></a>
+                    <% } %>
+
+                    <% if (page < Math.ceil(videos.length / videosPerPage)) { %>
+                    <a class="flex items-center justify-center w-6 h-6 rounded"
+                        href="/youtube-videos?page=<%= page + 1 %>">
+                        <svg width="6" height="10" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.875 0.75L7.125 7L0.875 13.25" stroke="#84818A" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                    <% } %>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<script>
+    const bannerImageInput = document.getElementById('video');
+    const previewImage = document.getElementById('previewImage');
+    const selectedImage = document.getElementById("selected-image");
+    const submitButton = document.getElementById("submitButton");
+
+    bannerImageInput.addEventListener('change', function () {
+        previewImage.style.display = "none";
+        if (this.files && this.files[0]) {
+            selectedImage.classList.remove("hidden");
+            selectedImage.src = URL.createObjectURL(bannerImageInput.files[0]);
+            submitButton.removeAttribute("disabled");
+        } else {
+            submitButton.setAttribute("disabled", "true");
+        }
+    });
+</script>
+
+<!-- <script>
+    const editBannerImageInput = document.getElementById('edit-video-image');
+    const editPreviewImage = document.getElementById('edit-video-image-preview');
+    const editSelectedImage = document.getElementById("edit-selected-image");
+    const editSubmitButton = document.getElementById("editSubmitButton");
+
+    editBannerImageInput.addEventListener('change', function () {
+        editPreviewImage.style.display = "none";
+        if (this.files && this.files[0]) {
+            editSelectedImage.classList.remove("hidden");
+            editSelectedImage.src = URL.createObjectURL(editBannerImageInput.files[0]);
+            editSubmitButton.removeAttribute("disabled");
+        } else {
+            editSubmitButton.setAttribute("disabled", "true");
+        }
+    });
+</script> -->
+
+
+
+<!-- Header Section Script -->
+<script>
+    // Menu toggle button 
+    const toggleButton = document.getElementById("toggle-button");
+    const toggleMenu = document.getElementById("toggle-menu");
+    var toggleCounter = 1;
+    toggleButton.onclick = function () {
+        toggleCounter++;
+        if (toggleCounter % 2 == 0) {
+            toggleMenu.classList.remove("hidden");
+            toggleMenu.classList.add("grid");
+        }
+        else {
+            toggleMenu.classList.remove("grid");
+            toggleMenu.classList.add("hidden");
+        }
+    }
+
+
+</script>
+
+
+<!-- Accordion Script -->
+<script>
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+    const accordionMenu = document.querySelectorAll('.menu-collapse');
+
+    accordionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const accordionCollapse = button.nextElementSibling;
+            button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'false' ? 'true' : 'false');
+            accordionCollapse.classList.toggle('hidden');
+        });
+    });
+
+    // Set all accordion items to collapsed state by default
+    document.querySelectorAll('.menu-collapse').forEach(collapse => {
+        collapse.classList.add('hidden');
+    });
+
+    document.addEventListener('click', function (e) {
+        const accordionMenu = document.getElementById('yourAccordionMenuId'); // Replace with your actual ID
+        const accordionButtons = document.getElementById('yourAccordionButtonsId'); // Replace with your actual ID
+
+        if (accordionMenu && accordionButtons) {
+            if (!accordionMenu.contains(e.target) && !accordionButtons.contains(e.target)) {
+                accordionMenu.classList.add('hidden');
+            }
+        }
+    });
+
+</script>
+
+<script>
+    const tables = document.querySelectorAll('.table-collapse');
+    window.onclick = function (event) {
+        for (let table of tables) {
+            if (event.target == table) {
+                table.classList.toggle('hidden');
+            }
+        }
+    };
+</script>
+
+
+
+<script>
+    function confirmDeleteBanner(bannerId) {
+        console.log(bannerId);
+        const dialog = document.getElementById('my_modal_6');
+        const deleteButton = dialog.querySelector('.bg-red-600');
+        const cancelButton = dialog.querySelector('.bg-gray-600');
+        deleteButton.onclick = async () => {
+            dialog.close();
+
+            try {
+                const response = await fetch(`/delete-youtube-videos?id=${bannerId}`, {
+                    method: 'GET',
+                });
+
+                if (response.status === 200) {
+
+                    location.reload();
+                } else {
+                    console.error('Error deleting video');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        cancelButton.onclick = () => {
+            dialog.close();
+        };
+
+        dialog.showModal();
+    }
+</script>
+
+</body>
+
+</html>
