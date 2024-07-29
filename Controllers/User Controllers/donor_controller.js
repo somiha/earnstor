@@ -95,6 +95,34 @@ exports.get_donor = async (req, res, next) => {
   }
 };
 
+exports.get_donor_by_id = async (req, res, next) => {
+  try {
+    const { donor_id } = req.query;
+
+    const getDonorQuery = `
+      SELECT d.*, 
+             u.id AS upazila_id, u.name AS upazila_name,
+             di.id AS district_id, di.name AS district_name,
+             dv.id AS division_id, dv.name AS division_name,
+             bg.id AS blood_group_id, bg.blood_group AS blood_group_name
+      FROM donor d
+      INNER JOIN upazila u ON d.upazila_id = u.id
+      INNER JOIN district di ON d.district_id = di.id
+      INNER JOIN division dv ON d.division_id = dv.id
+      INNER JOIN blood_group bg ON d.blood_group_id = bg.id WHERE d.id = ?
+    `;
+
+    const donors = await queryAsync(getDonorQuery, [donor_id]);
+
+    return res.status(200).json({ status: true, donors });
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ status: false, msg: "Internal Server Error" });
+  }
+};
+
 exports.edit_donor = async (req, res, next) => {
   try {
     const { donor_id } = req.params;

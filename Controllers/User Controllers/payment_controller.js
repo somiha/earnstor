@@ -7,9 +7,17 @@ exports.add_payment = async (req, res, next) => {
     let mobileNumber = req.body.mobile_number;
     let amount = req.body.amount;
     let operator = req.body.operator;
+    let package_id = req.body.package_id;
 
     payment_model
-      .addPayment(mobileNumber, transactionId, operator, amount, userId)
+      .addPayment(
+        mobileNumber,
+        transactionId,
+        operator,
+        amount,
+        userId,
+        package_id
+      )
       .then((result) => {
         let data = {
           status: "Success",

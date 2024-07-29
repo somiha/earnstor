@@ -44,3 +44,44 @@ exports.get_pdf = async (req, res, next) => {
       .json({ status: false, msg: "Internal Server Error" });
   }
 };
+
+exports.buy_pdf = async (req, res, next) => {
+  try {
+    const { user_id, pdf_id, payment_id, status } = req.body;
+
+    const addonlineCourseQuery =
+      "INSERT INTO buy_option (user_id, pdf_id, payment_id, status) VALUES (?, ?, ?, ?)";
+    await queryAsync(addonlineCourseQuery, [
+      user_id,
+      pdf_id,
+      payment_id,
+      "Pending",
+    ]);
+
+    return res.status(200).json({
+      status: true,
+      msg: "Pdf Bought successfully",
+      Pdf: { user_id, pdf_id, payment_id, status: "Pending" },
+    });
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ status: false, msg: "Internal Server Error" });
+  }
+};
+
+exports.get_buy_pdf = async (req, res, next) => {
+  try {
+    const { user_id, pdf_id } = req.query;
+    const getonlineCoursesQuery = `SELECT * FROM buy_option WHERE user_id = ? AND pdf_id = ?`;
+    const pdf = await queryAsync(getonlineCoursesQuery, [user_id, pdf_id]);
+
+    return res.status(200).json({ status: true, pdf });
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ status: false, msg: "Internal Server Error" });
+  }
+};

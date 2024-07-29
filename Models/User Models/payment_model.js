@@ -1,10 +1,17 @@
 const DB = require("../../Utils/db_connection");
 
 module.exports = class PaymentModel {
-  static addPayment(mobile_number, transaction_id, operator, amount, user_id) {
+  static addPayment(
+    mobile_number,
+    transaction_id,
+    operator,
+    amount,
+    user_id,
+    package_id
+  ) {
     return DB.execute(
-      "INSERT INTO payment(mobile_number,transaction_id,operator,amount,user_id) VALUES (?, ?, ?, ?,?)",
-      [mobile_number, transaction_id, operator, amount, user_id]
+      "INSERT INTO payment(mobile_number,transaction_id,operator,amount,user_id, package_id) VALUES (?, ?, ?, ?, ?, ?)",
+      [mobile_number, transaction_id, operator, amount, user_id, package_id]
     );
   }
 

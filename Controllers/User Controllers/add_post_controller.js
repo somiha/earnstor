@@ -42,7 +42,31 @@ exports.add_post = async (req, res, next) => {
 
 exports.get_post = async (req, res, next) => {
   try {
-    const query = "SELECT * FROM social_media";
+    const query = `SELECT 
+  p.*, 
+  COALESCE(like_counts.like_count, 0) AS like_count,
+  COALESCE(comment_counts.comment_count, 0) AS comment_count
+FROM 
+  social_media p
+LEFT JOIN (
+  SELECT 
+    post_id, 
+    COUNT(*) AS like_count 
+  FROM 
+    social_media_like 
+  GROUP BY 
+    post_id
+) like_counts ON p.id = like_counts.post_id
+LEFT JOIN (
+  SELECT 
+    post_id, 
+    COUNT(*) AS comment_count 
+  FROM 
+    comment 
+  GROUP BY 
+    post_id
+) comment_counts ON p.id = comment_counts.post_id;
+`;
     const posts = await queryAsyncWithoutValue(query);
 
     return res.status(200).json({

@@ -27,6 +27,8 @@ exports.getAllPendingPayments = async (req, res, next) => {
 exports.acceptPayment = async (req, res, next) => {
   try {
     const paymentId = req.params.paymentId;
+    const getPayment = `SELECT * FROM payment WHERE payment_id = ?`;
+    const payment = await queryAsync(getPayment, [paymentId]);
     const updatePaymentQuery = `UPDATE payment SET payment_status = 'accepted' WHERE payment_id = ?`;
     await queryAsync(updatePaymentQuery, [paymentId]);
     const userQuery = `SELECT user_id FROM payment WHERE payment_id = ?`;
@@ -34,6 +36,11 @@ exports.acceptPayment = async (req, res, next) => {
     const userId = user[0].user_id;
     const updateUserQuery = `UPDATE users SET is_payment_verified = 1 WHERE userid = ?`;
     await queryAsync(updateUserQuery, [userId]);
+
+    if (payment[0].package_id) {
+      const updateUserQuery = `UPDATE users SET package_id = ? WHERE userid = ?`;
+      await queryAsync(updateUserQuery, [payment[0].package_id, userId]);
+    }
 
     const userQuery1 = `SELECT * FROM users WHERE userid = ?`;
     const user1 = await queryAsync(userQuery1, [userId]);

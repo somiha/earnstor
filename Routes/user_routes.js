@@ -32,6 +32,16 @@ const post = require("../Controllers/User Controllers/add_post_controller");
 const blood_group = require("../Controllers/User Controllers/blood_group_controller");
 const donor = require("../Controllers/User Controllers/donor_controller");
 const donation = require("../Controllers/User Controllers/donation_controller");
+const online_tv = require("../Controllers/User Controllers/online_tv_controller");
+const newspaper = require("../Controllers/User Controllers/newspaper_controller");
+const category = require("../Controllers/User Controllers/category_controller");
+const sport = require("../Controllers/User Controllers/sportUpdate");
+const ad = require("../Controllers/User Controllers/ad_controller");
+const profile = require("../Controllers/User Controllers/profile_update");
+const food = require("../Controllers/User Controllers/food_controller");
+const car = require("../Controllers/User Controllers/car_controller");
+const percel_delivery = require("../Controllers/User Controllers/percel_delivery_controller");
+const message = require("../Controllers/User Controllers/message_controller");
 const multiUpload = require("../middleware/multiupload");
 
 // Use of express Router
@@ -110,21 +120,34 @@ router.post(
   upload.fields([{ name: "icon" }]),
   online_course.online_course
 );
+
+router.post("/buy-online-course", online_course.buy_online_course);
 router.get("/get-online-course", online_course.get_online_course);
+
+router.get("/get-buy-online-course", online_course.get_buy_online_course);
+
+router.post(
+  "/add-popular-course",
+  upload.fields([{ name: "icon" }]),
+  online_course.popular_course
+);
+router.get("/get-popular-course", online_course.get_popular_course);
 
 router.post("/add-pdf", upload.fields([{ name: "image" }]), pdf.pdf);
 router.get("/get-pdf", pdf.get_pdf);
 
+router.post("/buy-pdf", pdf.buy_pdf);
+router.get("/get-buy-pdf", pdf.get_buy_pdf);
+
 router.post("/add-hotel", upload.fields([{ name: "image" }]), hotel.add_hotel);
 router.get("/get-all-hotel", hotel.get_hotel);
 
-router.get("/get-hotel/:id", hotel.get_hotel_by_id);
+router.get("/get-hotel", hotel.get_hotel_by_id);
 
-router.get("/get-hotel-room/:id", hotel.get_hotel_room_by_id);
+router.get("/get-hotel-room", hotel.get_hotel_room_by_id);
 
 router.post("/add-country", country.country);
 router.get("/get-country", country.get_country);
-
 router.post(
   "/add-hotel-room",
   upload.fields([{ name: "image" }]),
@@ -213,6 +236,8 @@ router.post(
 
 router.get("/get-donor", donor.get_donor);
 
+router.get("/get-donor-id", donor.get_donor_by_id);
+
 router.get("/get-donor-blood-group", donor.get_donor_blood_group);
 
 router.post("/add-donation-by-user", donation.add_donation_by_user);
@@ -220,6 +245,180 @@ router.post("/add-donation-by-user", donation.add_donation_by_user);
 router.post("/add-donation-by-admin", donation.add_donation_by_admin);
 
 router.get("/get-recent-donation", donation.get_recent_donations);
+
+router.post(
+  "/add-online-tv",
+  upload.fields([{ name: "image" }]),
+  online_tv.add_online_tv
+);
+
+router.get("/get-online-tv", online_tv.get_online_tv);
+
+router.post("/delete-online-tv", online_tv.delete_online_tv);
+
+router.post(
+  "/add-newspaper",
+  upload.fields([{ name: "image" }]),
+  newspaper.add_newspaper
+);
+
+router.get("/get-newspaper", newspaper.get_newspaper);
+
+router.post("/delete-newspaper", newspaper.delete_newspaper);
+
+router.post(
+  "/add-all-category",
+  upload.fields([{ name: "image" }]),
+  category.add_all_category
+);
+
+router.get("/get-all-category", category.get_all_category);
+
+router.post("/delete-all-category", category.delete_all_category);
+
+router.post(
+  "/add-sub-category",
+  upload.fields([{ name: "image" }]),
+  category.add_sub_category
+);
+
+router.get("/get-sub-category", category.get_sub_category);
+
+router.post("/delete-sub-category", category.delete_sub_category);
+
+router.post(
+  "/add-extra-category",
+  upload.fields([{ name: "image" }]),
+  category.add_extra_category
+);
+
+router.get("/get-extra-category", category.get_extra_category);
+
+router.post("/delete-extra-category", category.delete_extra_category);
+
+router.post("/add-sport-category", sport.addSportCategory);
+router.post("/update-sport-category", sport.updateSportCategory);
+router.post("/delete-sport-category", sport.deleteSportCategory);
+router.get("/get-sport-category", sport.getAllSportCategory);
+
+router.post("/add-team", upload.fields([{ name: "image" }]), sport.addTeam);
+router.post(
+  "/update-team",
+  upload.fields([{ name: "image" }]),
+  sport.updateTeam
+);
+router.post("/delete-team", sport.deleteTeam);
+router.get("/get-teams", sport.getTeam);
+
+router.post("/add-sport-update", sport.addSportUpdate);
+
+router.get("/get-sport-updates", sport.getAllSportUpdates);
+
+router.post("/ad-package", ad.ad_package);
+
+router.get("/get-ad-package", ad.get_ad_package);
+
+router.post(
+  "/ad-category",
+  upload.fields([{ name: "image" }]),
+  ad.add_ad_category
+);
+
+router.get("/get-ad-category", ad.get_ad_category);
+
+router.post("/run-ad", ad.run_ad);
+
+router.get("/get-ad", ad.get_ad);
+
+router.post("/add-packages", ad.add_package);
+
+router.get("/get-packages", ad.get_package);
+
+router.post("/profile-update", profile.profile_update);
+
+router.post(
+  "/add-restaurants",
+  upload.fields([{ name: "image" }]),
+  food.add_restautants
+);
+
+router.get("/get-restaurants", food.get_restautants);
+
+router.post("/add-food", upload.fields([{ name: "image" }]), food.add_food);
+
+router.post(
+  "/upload-food-images",
+  multiUpload.fields([{ name: "food-images" }]),
+  food.upload_food_images
+);
+
+router.get("/get-food", food.get_food);
+
+router.get("/get-food-by-restaurants", food.get_food_by_res);
+
+router.get("/get-food-by-id", food.get_food_by_food);
+
+router.get("/delete-food", food.delete_food);
+
+router.post("/add-order", food.add_order);
+
+router.get("/get-order-by-user", food.get_order_by_user);
+
+router.post(
+  "/add-car-shop",
+  upload.fields([{ name: "image" }]),
+  car.add_car_shop
+);
+
+router.get("/get-car-shop", car.get_car_shop);
+
+router.post("/add-car", upload.fields([{ name: "image" }]), car.add_car);
+
+router.post(
+  "/upload-car-images",
+  multiUpload.fields([{ name: "car-images" }]),
+  car.upload_car_images
+);
+
+router.get("/get-car", car.get_car);
+
+router.get("/get-car-by-shop", car.get_car_by_shop);
+
+router.get("/get-car-by-id", car.get_car_by_car);
+
+router.get("/delete-car", car.delete_car);
+
+router.post("/add-rent", car.add_rent);
+
+router.get("/get-rent-by-user", car.get_rent_by_user);
+
+router.post(
+  "/add-delivery-company",
+  upload.fields([{ name: "image" }]),
+  percel_delivery.add_delivery_company
+);
+
+router.get("/get-delivery-company", percel_delivery.get_delivery_company);
+
+router.post("/add-order-percel", percel_delivery.add_order);
+
+router.get("/get-order-percel", percel_delivery.get_order);
+
+router.get("/get-percel-order-user", percel_delivery.get_order_by_user);
+
+router.get("/delete-percel-order", percel_delivery.delete_order);
+
+router.post("/add-conversation", message.add_conversation);
+
+router.post("/add-message", message.add_message);
+
+router.get("/get-conversation", message.get_conversation_member);
+
+router.get("/get-message", message.get_messages);
+
+router.post("/group-conversations", message.add_group_conversation);
+router.post("/group-messages", message.add_group_message);
+router.get("/group-conversations", message.get_group_messages);
 
 // Exports
 module.exports = router;

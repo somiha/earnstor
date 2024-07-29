@@ -72,9 +72,9 @@ exports.add_hotel = async (req, res, next) => {
 exports.get_hotel = async (req, res, next) => {
   try {
     const getHotelQuery = `SELECT * FROM hotel`;
-    const Pdfs = await queryAsyncWithoutValue(getHotelQuery);
+    const hotel = await queryAsyncWithoutValue(getHotelQuery);
 
-    return res.status(200).json({ status: true, Pdfs });
+    return res.status(200).json({ status: true, hotel });
   } catch (e) {
     console.error(e);
     return res
@@ -85,7 +85,7 @@ exports.get_hotel = async (req, res, next) => {
 
 exports.get_hotel_by_id = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id } = req.query;
     const getHotelQuery = `SELECT * FROM hotel WHERE id = ?`;
     const hotel = await queryAsync(getHotelQuery, [id]);
     const hotelRoomsQuery = `SELECT * FROM hotel_room WHERE hotel_id = ?`;
@@ -127,7 +127,7 @@ exports.get_hotel_by_id = async (req, res, next) => {
 
 exports.get_hotel_room_by_id = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id } = req.query;
     const getHotelRoomQuery = `SELECT * FROM hotel_room WHERE id = ?`;
     const hotelRoom = await queryAsync(getHotelRoomQuery, [id]);
 

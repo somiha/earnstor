@@ -45,12 +45,12 @@ exports.add_agency_package = async (req, res, next) => {
 
 exports.get_agency_package = async (req, res, next) => {
   try {
-    const { agency_id } = req.params; // Assuming hotel_id is passed as a route parameter
+    const { agency_id } = req.query;
     const getPackageQuery = `SELECT ap.*, a.*
       FROM agency_package ap
-      INNER JOIN agency a ON ap.agency_id = a.id`;
+      INNER JOIN agency a ON ap.agency_id = a.id WHERE agency_id = ?`;
 
-    const agencies = await queryAsyncWithoutValue(getPackageQuery);
+    const agencies = await queryAsync(getPackageQuery, [agency_id]);
     // const rooms = await queryAsync(getRoomsQuery, [hotel_id]);
 
     return res.status(200).json({ status: true, agencies });
@@ -84,7 +84,7 @@ exports.book_agency = async (req, res, next) => {
 
 exports.get_booked_agency_package = async (req, res, next) => {
   try {
-    // const { user_id } = req.params;
+    const { user_id } = req.query;
 
     const getAgencyQuery = `
       SELECT
@@ -101,10 +101,10 @@ exports.get_booked_agency_package = async (req, res, next) => {
       INNER JOIN
           agency a ON ap.agency_id = a.id
       INNER JOIN
-          users u ON b.user_id = u.userid
+          users u ON b.user_id = u.userid WHERE user_id = ?
     `;
 
-    const agency = await queryAsync(getAgencyQuery, []);
+    const agency = await queryAsync(getAgencyQuery, [user_id]);
     return res.status(200).json({ status: true, agency });
   } catch (e) {
     console.error(e);
