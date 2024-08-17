@@ -50,10 +50,47 @@ exports.get_agency_package = async (req, res, next) => {
       FROM agency_package ap
       INNER JOIN agency a ON ap.agency_id = a.id WHERE agency_id = ?`;
 
-    const agencies = await queryAsync(getPackageQuery, [agency_id]);
+    const packages = await queryAsync(getPackageQuery, [agency_id]);
     // const rooms = await queryAsync(getRoomsQuery, [hotel_id]);
 
-    return res.status(200).json({ status: true, agencies });
+    return res.status(200).json({ status: true, packages });
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ status: false, msg: "Internal Server Error" });
+  }
+};
+
+exports.get_all_agency_package = async (req, res, next) => {
+  try {
+    const getPackageQuery = `SELECT ap.*, a.*
+      FROM agency_package ap
+      INNER JOIN agency a ON ap.agency_id = a.id`;
+
+    const packages = await queryAsyncWithoutValue(getPackageQuery);
+    // const rooms = await queryAsync(getRoomsQuery, [hotel_id]);
+
+    return res.status(200).json({ status: true, packages });
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ status: false, msg: "Internal Server Error" });
+  }
+};
+
+exports.get_agency_package_id = async (req, res, next) => {
+  try {
+    const { package_id } = req.query;
+    const getPackageQuery = `SELECT ap.*, a.*
+      FROM agency_package ap
+      INNER JOIN agency a ON ap.agency_id = a.id WHERE id = ?`;
+
+    const packages = await queryAsync(getPackageQuery, [package_id]);
+    // const rooms = await queryAsync(getRoomsQuery, [hotel_id]);
+
+    return res.status(200).json({ status: true, packages });
   } catch (e) {
     console.error(e);
     return res

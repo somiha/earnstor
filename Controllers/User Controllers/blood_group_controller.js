@@ -60,8 +60,9 @@ exports.upazila = async (req, res, next) => {
 
 exports.get_upazila = async (req, res, next) => {
   try {
-    const getupazilasQuery = `SELECT * FROM upazila`;
-    const upazilas = await queryAsyncWithoutValue(getupazilasQuery);
+    const { district_id } = req.query;
+    const getupazilasQuery = `SELECT * FROM upazila WHERE district_id = ?`;
+    const upazilas = await queryAsync(getupazilasQuery, [district_id]);
 
     return res.status(200).json({ status: true, upazilas });
   } catch (e) {
@@ -94,8 +95,9 @@ exports.district = async (req, res, next) => {
 
 exports.get_district = async (req, res, next) => {
   try {
-    const getdistrictsQuery = `SELECT * FROM district`;
-    const districts = await queryAsyncWithoutValue(getdistrictsQuery);
+    const { division_id } = req.query;
+    const getdistrictsQuery = `SELECT * FROM district WHERE division_id = ?`;
+    const districts = await queryAsync(getdistrictsQuery, [division_id]);
 
     return res.status(200).json({ status: true, districts });
   } catch (e) {

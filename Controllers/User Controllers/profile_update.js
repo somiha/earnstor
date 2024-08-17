@@ -4,16 +4,19 @@ const baseUrl = process.env.baseUrl;
 
 exports.profile_update = async (req, res) => {
   const { id } = req.query;
-  const { title, studied_at, working_at, address, relationship } = req.body;
+  const { title, studied_at, working_at, address, relationship, country } =
+    req.body;
 
   const updateQuery =
-    "UPDATE users SET title = ?, studied_at = ?, working_at = ?, address = ?, relationship = ? WHERE userid = ?";
+    "UPDATE users SET title = ?, studied_at = ?, working_at = ?, address = ?, relationship = ?, country = ? WHERE userid = ?";
   await queryAsync(updateQuery, [
     title,
     studied_at,
     working_at,
     address,
     relationship,
+    country,
+
     id,
   ]);
 

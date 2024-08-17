@@ -7,7 +7,7 @@ exports.add_payment = async (req, res, next) => {
     let mobileNumber = req.body.mobile_number;
     let amount = req.body.amount;
     let operator = req.body.operator;
-    let package_id = req.body.package_id;
+    let package_id = req.body.package_id || null;
 
     payment_model
       .addPayment(

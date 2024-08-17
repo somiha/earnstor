@@ -4,6 +4,7 @@ const db = require("./db_connection");
 async function queryAsync(query, values) {
   try {
     const result = await db.query(query, values);
+    console.log(result[0]);
     return result[0];
   } catch (err) {
     console.log(err);

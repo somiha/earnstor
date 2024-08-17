@@ -98,7 +98,7 @@ exports.get_car_shop = async (req, res, next) => {
 
 exports.add_car = async (req, res, next) => {
   try {
-    const { name, seat, car_shop_id, description } = req.body;
+    const { name, seat, car_shop_id, description, price } = req.body;
     const image = req.files["image"];
 
     let imageUrl = null;
@@ -108,12 +108,13 @@ exports.add_car = async (req, res, next) => {
     }
 
     const addcarQuery =
-      "INSERT INTO car (name, seat, car_shop_id, description, image) VALUES (?, ?, ?, ?, ?)";
+      "INSERT INTO car (name, seat, car_shop_id, description, price, image) VALUES (?, ?, ?, ?, ?, ?)";
     await queryAsync(addcarQuery, [
       name,
       seat,
       car_shop_id,
       description,
+      price,
       imageUrl,
     ]);
 
@@ -125,6 +126,7 @@ exports.add_car = async (req, res, next) => {
         seat,
         car_shop_id,
         description,
+        price,
         image: imageUrl,
       },
     });
@@ -179,26 +181,27 @@ exports.get_car = async (req, res, next) => {
       INNER JOIN car_shop u ON d.car_shop_id = u.id
     `;
 
-    const car = await queryAsyncWithoutValue(getQuery);
+    const cars = await queryAsyncWithoutValue(getQuery); // Fetch all cars
 
-    const ImagesIds = car[0].images ? JSON.parse(car[0].images) : [];
-    let promises = [];
+    const data = await Promise.all(
+      cars.map(async (car) => {
+        const ImagesIds = car.images ? JSON.parse(car.images) : [];
+        let images = [];
 
-    console.log("roomImagesIds", ImagesIds);
+        for (const imageId of ImagesIds) {
+          const imageUrlQuery = `SELECT url FROM images WHERE id = ?`;
+          const result = await queryAsync(imageUrlQuery, [imageId]);
+          images.push(result[0]?.url || null); // Add null if image not found
+        }
 
-    promises = ImagesIds.map(async (imageId) => {
-      const imageUrl = `SELECT url FROM images WHERE id = ?`;
-      const result = await queryAsync(imageUrl, [imageId]);
-      return result[0].url;
-    });
+        return {
+          ...car,
+          images: images.filter((url) => url !== null), // Filter out any null values
+        };
+      })
+    );
 
-    const images = await Promise.all(promises);
-    const data = {
-      ...car[0],
-      images: images,
-    };
-
-    return res.status(200).json({ status: true, data });
+    return res.status(200).json({ status: true, data }); // Return the list of cars
   } catch (e) {
     console.error(e);
     return res
@@ -207,6 +210,44 @@ exports.get_car = async (req, res, next) => {
   }
 };
 
+// exports.get_car_by_shop = async (req, res, next) => {
+//   try {
+//     const { shop_id } = req.query;
+//     const getQuery = `
+//       SELECT d.*,
+//              u.id AS car_shop_id, u.name AS car_shop_name
+//       FROM car d
+//       INNER JOIN car_shop u ON d.car_shop_id = u.id WHERE car_shop_id = ?
+//     `;
+
+//     const car = await queryAsync(getQuery, [shop_id]);
+
+//     const ImagesIds = car[0].images ? JSON.parse(car[0].images) : [];
+//     let promises = [];
+
+//     console.log("roomImagesIds", ImagesIds);
+
+//     promises = ImagesIds.map(async (imageId) => {
+//       const imageUrl = `SELECT url FROM images WHERE id = ?`;
+//       const result = await queryAsync(imageUrl, [imageId]);
+//       return result[0].url;
+//     });
+
+//     const images = await Promise.all(promises);
+//     const data = {
+//       ...car[0],
+//       images: images,
+//     };
+
+//     return res.status(200).json({ status: true, data });
+//   } catch (e) {
+//     console.error(e);
+//     return res
+//       .status(500)
+//       .json({ status: false, msg: "Internal Server Error" });
+//   }
+// };
+
 exports.get_car_by_shop = async (req, res, next) => {
   try {
     const { shop_id } = req.query;
@@ -214,27 +255,36 @@ exports.get_car_by_shop = async (req, res, next) => {
       SELECT d.*, 
              u.id AS car_shop_id, u.name AS car_shop_name
       FROM car d
-      INNER JOIN car_shop u ON d.car_shop_id = u.id WHERE car_shop_id = ?
+      INNER JOIN car_shop u ON d.car_shop_id = u.id WHERE d.car_shop_id = ?
     `;
 
-    const car = await queryAsync(getQuery, [shop_id]);
+    const cars = await queryAsync(getQuery, [shop_id]);
 
-    const ImagesIds = car[0].images ? JSON.parse(car[0].images) : [];
-    let promises = [];
+    const data = await Promise.all(
+      cars.map(async (car) => {
+        const ImagesIds = car.images ? JSON.parse(car.images) : [];
+        let images = [];
 
-    console.log("roomImagesIds", ImagesIds);
+        for (const imageId of ImagesIds) {
+          const imageUrlQuery = `SELECT url FROM images WHERE id = ?`;
+          const result = await queryAsync(imageUrlQuery, [imageId]);
 
-    promises = ImagesIds.map(async (imageId) => {
-      const imageUrl = `SELECT url FROM images WHERE id = ?`;
-      const result = await queryAsync(imageUrl, [imageId]);
-      return result[0].url;
-    });
+          if (result.length === 0) {
+            return res.status(404).json({
+              status: false,
+              msg: `Image with ID ${imageId} not found for car ID ${car.id}`,
+            });
+          }
 
-    const images = await Promise.all(promises);
-    const data = {
-      ...car[0],
-      images: images,
-    };
+          images.push(result[0].url);
+        }
+
+        return {
+          ...car,
+          images: images,
+        };
+      })
+    );
 
     return res.status(200).json({ status: true, data });
   } catch (e) {

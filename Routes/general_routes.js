@@ -14,7 +14,7 @@ router.get("/get-leaderboard", LeaderBoardController.GetLeaderBoard);
 router.get("/general-info", GetGeneralInfos.GetGeneralInfo);
 router.get("/banner", GetBanner.getBanner);
 router.get("/operator", GetOperator.getOperator);
-router.patch("/general-info", EditGeneralController.EditGeneralInfo);
+router.post("/general-info", EditGeneralController.EditGeneralInfo);
 
 // Exports
 module.exports = router;

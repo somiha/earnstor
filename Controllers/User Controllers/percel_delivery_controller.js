@@ -20,6 +20,8 @@ exports.add_delivery_company = async (req, res, next) => {
       opening_time,
       closing_time,
       email,
+      description,
+      price,
     } = req.body;
     const image = req.files["image"];
 
@@ -30,7 +32,7 @@ exports.add_delivery_company = async (req, res, next) => {
     }
 
     const addQuery =
-      "INSERT INTO delivery_company (name, mobile_number, upazila_id, district_id, division_id, address, image, lang, lat, opening_time, closing_time, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO delivery_company (name, mobile_number, upazila_id, district_id, division_id, address, image, lang, lat, opening_time, closing_time, email, description, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     await queryAsync(addQuery, [
       name,
       mobile_number,
@@ -44,6 +46,8 @@ exports.add_delivery_company = async (req, res, next) => {
       opening_time,
       closing_time,
       email,
+      description,
+      price,
     ]);
 
     return res.status(200).json({
@@ -62,6 +66,8 @@ exports.add_delivery_company = async (req, res, next) => {
         opening_time,
         closing_time,
         email,
+        description,
+        price,
       },
     });
   } catch (e) {
@@ -88,6 +94,31 @@ exports.get_delivery_company = async (req, res, next) => {
     const delivery_company = await queryAsyncWithoutValue(
       getdelivery_companyQuery
     );
+
+    return res.status(200).json({ status: true, delivery_company });
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ status: false, msg: "Internal Server Error" });
+  }
+};
+
+exports.get_delivery_company_id = async (req, res, next) => {
+  try {
+    const { id } = req.query;
+    const getdelivery_companyQuery = `
+      SELECT d.*, 
+             u.id AS upazila_id, u.name AS upazila_name,
+             di.id AS district_id, di.name AS district_name,
+             dv.id AS division_id, dv.name AS division_name
+      FROM delivery_company d
+      INNER JOIN upazila u ON d.upazila_id = u.id
+      INNER JOIN district di ON d.district_id = di.id
+      INNER JOIN division dv ON d.division_id = dv.id WHERE d.id = ?
+    `;
+
+    const delivery_company = await queryAsync(getdelivery_companyQuery, [id]);
 
     return res.status(200).json({ status: true, delivery_company });
   } catch (e) {

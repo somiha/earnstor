@@ -45,6 +45,21 @@ exports.get_pdf = async (req, res, next) => {
   }
 };
 
+exports.get_pdf_id = async (req, res, next) => {
+  try {
+    const { pdf_id } = req.query;
+    const getPdfsQuery = `SELECT * FROM pdf_info WHERE id = ?`;
+    const Pdfs = await queryAsync(getPdfsQuery, [pdf_id]);
+
+    return res.status(200).json({ status: true, Pdfs });
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ status: false, msg: "Internal Server Error" });
+  }
+};
+
 exports.buy_pdf = async (req, res, next) => {
   try {
     const { user_id, pdf_id, payment_id, status } = req.body;

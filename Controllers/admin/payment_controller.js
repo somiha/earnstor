@@ -40,6 +40,8 @@ exports.acceptPayment = async (req, res, next) => {
     if (payment[0].package_id) {
       const updateUserQuery = `UPDATE users SET package_id = ? WHERE userid = ?`;
       await queryAsync(updateUserQuery, [payment[0].package_id, userId]);
+      const updatePremiumQuery = `UPDATE users SET premium = 1 WHERE userid = ?`;
+      await queryAsync(updatePremiumQuery, [userId]);
     }
 
     const userQuery1 = `SELECT * FROM users WHERE userid = ?`;

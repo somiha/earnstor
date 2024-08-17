@@ -114,11 +114,12 @@ exports.add_sub_category = async (req, res, next) => {
 
 exports.get_sub_category = async (req, res, next) => {
   try {
+    const { ref_id } = req.query;
     const getQuery = `
-      SELECT s.*, r.name AS ref_name FROM sub_category s INNER JOIN all_category r ON s.ref_id = r.id
+      SELECT s.*, r.name AS ref_name FROM sub_category s INNER JOIN all_category r ON s.ref_id = r.id WHERE s.ref_id = ?
     `;
 
-    const subCategory = await queryAsyncWithoutValue(getQuery);
+    const subCategory = await queryAsync(getQuery, [ref_id]);
 
     return res.status(200).json({ status: true, subCategory });
   } catch (e) {
@@ -190,11 +191,31 @@ exports.add_extra_category = async (req, res, next) => {
 
 exports.get_extra_category = async (req, res, next) => {
   try {
-    const getQuery = `
-      SELECT s.*, r.name AS ref_name FROM extra_category s INNER JOIN sub_category r ON s.ref_id = r.id
-    `;
+    // const { ref_id } = req.query;
+    // const getQuery = `
+    //   SELECT s.*, r.name AS ref_name FROM extra_category s INNER JOIN sub_category r ON s.ref_id = r.id WHERE s.ref_id = ?
+    // `;
 
-    const extraCategory = await queryAsyncWithoutValue(getQuery);
+    const get = "SELECT * FROM extra_category";
+    const extraCategory = await queryAsync(get);
+
+    //     const getQuery = `
+    //       SELECT
+    //     p.*,
+    //     ec.name AS category_name,
+    //     r.name AS ref_name
+    // FROM
+    //     products p
+    // INNER JOIN
+    //     extra_category ec ON p.product_cat_id = ec.id
+    // INNER JOIN
+    //     sub_category r ON ec.ref_id = r.id
+    // WHERE
+    //     ec.ref_id = ?
+
+    //     `;
+
+    // const extraCategory = await queryAsync(getQuery, [ref_id]);
 
     return res.status(200).json({ status: true, extraCategory });
   } catch (e) {

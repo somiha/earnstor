@@ -6,59 +6,50 @@ const baseUrl = process.env.baseUrl;
 exports.add_hotel = async (req, res, next) => {
   try {
     const {
-      id,
       hotel_name,
       location,
       longitude,
       latitude,
-      rating,
-      reviews,
       mobile_number,
       email,
       checking_in,
       checking_out,
     } = req.body;
-    const images = req.files["images"];
+    const image = req.files["image"];
 
-    let imageUrls = [];
+    let imageUrl = null;
 
-    if (images && images.length > 0) {
-      imageUrls = images.map((image) => `${baseUrl}/uploads/${image.filename}`);
+    if (image) {
+      imageUrl = `${baseUrl}/uploads/${image[0].filename}`;
     }
 
     const addHotelQuery =
-      "INSERT INTO hotel (id, hotel_name, location, longitude, latitude, rating, reviews, mobile_number, email, checking_in, checking_out, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO hotel ( hotel_name, location, longitude, latitude, mobile_number, email, checking_in, checking_out, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     await queryAsync(addHotelQuery, [
-      id,
       hotel_name,
       location,
       longitude,
       latitude,
-      rating,
-      reviews,
       mobile_number,
       email,
       checking_in,
       checking_out,
-      imageUrls.join(";"), // Store multiple image URLs as a string in the database
+      imageUrl, // Store multiple image URLs as a string in the database
     ]);
 
     return res.status(200).json({
       status: true,
       msg: "Hotel added successfully",
       Hotel: {
-        id,
         hotel_name,
         location,
         longitude,
         latitude,
-        rating,
-        reviews,
         mobile_number,
         email,
         checking_in,
         checking_out,
-        images: imageUrls,
+        images: imageUrl,
       },
     });
   } catch (e) {
@@ -69,12 +60,95 @@ exports.add_hotel = async (req, res, next) => {
   }
 };
 
+exports.add_review = async (req, res, next) => {
+  try {
+    const { review, rating, user_id, hotel_id } = req.body;
+
+    // Insert the new review into the reviews table
+    const addReviewQuery = `
+      INSERT INTO review (review, rating, user_id, hotel_id) 
+      VALUES (?, ?, ?, ?)
+    `;
+    await queryAsync(addReviewQuery, [review, rating, user_id, hotel_id]);
+
+    // Calculate the new average rating for the hotel and round to 2 decimal places
+    const avgRatingQuery = `
+      SELECT ROUND(AVG(rating), 2) as avgRating 
+      FROM review 
+      WHERE hotel_id = ?
+    `;
+    const avgRatingResult = await queryAsync(avgRatingQuery, [hotel_id]);
+    const avgRating = avgRatingResult[0].avgRating;
+
+    // Update the hotel table with the new average rating
+    const updateHotelRatingQuery = `
+      UPDATE hotel 
+      SET rating = ? 
+      WHERE id = ?
+    `;
+    await queryAsync(updateHotelRatingQuery, [avgRating, hotel_id]);
+
+    return res.status(200).json({
+      status: true,
+      msg: "Review added successfully",
+      Review: {
+        review,
+        rating,
+        user_id,
+        hotel_id,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({
+      status: false,
+      msg: "Internal Server Error",
+    });
+  }
+};
+
 exports.get_hotel = async (req, res, next) => {
   try {
-    const getHotelQuery = `SELECT * FROM hotel`;
-    const hotel = await queryAsyncWithoutValue(getHotelQuery);
+    const getHotelQuery = `
+      SELECT h.*, 
+             r.review, 
+             r.rating AS review_rating, 
+             r.user_id AS review_user_id, 
+             r.hotel_id AS review_hotel_id
+      FROM hotel h
+      LEFT JOIN review r ON h.id = r.hotel_id
+    `;
+    const hotelResult = await queryAsyncWithoutValue(getHotelQuery);
 
-    return res.status(200).json({ status: true, hotel });
+    // Group reviews by hotel
+    const hotels = hotelResult.reduce((acc, curr) => {
+      const hotel = acc.find((h) => h.id === curr.id);
+      if (hotel) {
+        hotel.reviews.push({
+          review: curr.review,
+          rating: curr.review_rating,
+          user_id: curr.review_user_id,
+          hotel_id: curr.review_hotel_id,
+        });
+      } else {
+        acc.push({
+          ...curr,
+          reviews: curr.review
+            ? [
+                {
+                  review: curr.review,
+                  rating: curr.review_rating,
+                  user_id: curr.review_user_id,
+                  hotel_id: curr.review_hotel_id,
+                },
+              ]
+            : [],
+        });
+      }
+      return acc;
+    }, []);
+
+    return res.status(200).json({ status: true, hotels });
   } catch (e) {
     console.error(e);
     return res
@@ -88,6 +162,11 @@ exports.get_hotel_by_id = async (req, res, next) => {
     const { id } = req.query;
     const getHotelQuery = `SELECT * FROM hotel WHERE id = ?`;
     const hotel = await queryAsync(getHotelQuery, [id]);
+
+    if (hotel.length === 0) {
+      return res.status(404).json({ status: false, msg: "Hotel not found" });
+    }
+
     const hotelRoomsQuery = `SELECT * FROM hotel_room WHERE hotel_id = ?`;
     let hotelRooms = await queryAsync(hotelRoomsQuery, [id]);
 
@@ -100,23 +179,28 @@ exports.get_hotel_by_id = async (req, res, next) => {
           promises = roomImagesIds.map(async (imageId) => {
             const imageUrl = `SELECT url FROM images WHERE id = ?`;
             const result = await queryAsync(imageUrl, [imageId]);
-            console.log(result[0].url);
             return result[0].url;
           });
         }
 
-        // console.log(roomImages);
         const roomImages = await Promise.all(promises);
 
         return {
           ...room,
-          image: room.image,
           images: roomImages,
         };
       })
     );
 
-    return res.status(200).json({ status: true, hotel, hotelRooms });
+    const reviewsQuery = `SELECT * FROM review WHERE hotel_id = ?`;
+    const reviews = await queryAsync(reviewsQuery, [id]);
+
+    return res.status(200).json({
+      status: true,
+      hotel: hotel[0],
+      hotelRooms,
+      reviews,
+    });
   } catch (e) {
     console.error(e);
     return res

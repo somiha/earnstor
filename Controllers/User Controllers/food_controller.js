@@ -170,33 +170,74 @@ exports.upload_food_images = async (req, res, next) => {
   }
 };
 
+// exports.get_food = async (req, res, next) => {
+//   try {
+//     const getQuery = `
+//       SELECT d.*,
+//              u.id AS restaurant_id, u.name AS restaurant_name
+//       FROM food d
+//       INNER JOIN restaurants u ON d.res_id = u.id
+//     `;
+
+//     const food = await queryAsyncWithoutValue(getQuery);
+
+//     const ImagesIds = food[0].images ? JSON.parse(food[0].images) : [];
+//     let promises = [];
+
+//     console.log("roomImagesIds", ImagesIds);
+
+//     promises = ImagesIds.map(async (imageId) => {
+//       const imageUrl = `SELECT url FROM images WHERE id = ?`;
+//       const result = await queryAsync(imageUrl, [imageId]);
+//       return result[0].url;
+//     });
+
+//     const images = await Promise.all(promises);
+//     const data = {
+//       ...food,
+//       images: images,
+//     };
+
+//     return res.status(200).json({ status: true, data });
+//   } catch (e) {
+//     console.error(e);
+//     return res
+//       .status(500)
+//       .json({ status: false, msg: "Internal Server Error" });
+//   }
+// };
+
 exports.get_food = async (req, res, next) => {
   try {
     const getQuery = `
       SELECT d.*, 
-             u.id AS restaurant_id, u.name AS restaurant_name
+             u.id AS restaurant_id, 
+             u.name AS restaurant_name,
+             fc.name AS cat_name
       FROM food d
       INNER JOIN restaurants u ON d.res_id = u.id
+      LEFT JOIN food_cat fc ON d.cat_id = fc.id
     `;
 
     const food = await queryAsyncWithoutValue(getQuery);
 
-    const ImagesIds = food[0].images ? JSON.parse(food[0].images) : [];
-    let promises = [];
+    let data = await Promise.all(
+      food.map(async (item) => {
+        const ImagesIds = item.images ? JSON.parse(item.images) : [];
+        let promises = ImagesIds.map(async (imageId) => {
+          const imageUrlQuery = `SELECT url FROM images WHERE id = ?`;
+          const result = await queryAsync(imageUrlQuery, [imageId]);
+          return result[0].url;
+        });
 
-    console.log("roomImagesIds", ImagesIds);
+        const images = await Promise.all(promises);
 
-    promises = ImagesIds.map(async (imageId) => {
-      const imageUrl = `SELECT url FROM images WHERE id = ?`;
-      const result = await queryAsync(imageUrl, [imageId]);
-      return result[0].url;
-    });
-
-    const images = await Promise.all(promises);
-    const data = {
-      ...food[0],
-      images: images,
-    };
+        return {
+          ...item,
+          images: images,
+        };
+      })
+    );
 
     return res.status(200).json({ status: true, data });
   } catch (e) {
@@ -207,34 +248,75 @@ exports.get_food = async (req, res, next) => {
   }
 };
 
+// exports.get_food_by_res = async (req, res, next) => {
+//   try {
+//     const { res_id } = req.query;
+//     const getQuery = `
+//       SELECT d.*,
+//              u.id AS restaurant_id, u.name AS restaurant_name
+//       FROM food d
+//       INNER JOIN restaurants u ON d.res_id = u.id WHERE res_id = ?
+//     `;
+
+//     const food = await queryAsync(getQuery, [res_id]);
+
+//     const ImagesIds = food[0].images ? JSON.parse(food[0].images) : [];
+//     let promises = [];
+
+//     console.log("roomImagesIds", ImagesIds);
+
+//     promises = ImagesIds.map(async (imageId) => {
+//       const imageUrl = `SELECT url FROM images WHERE id = ?`;
+//       const result = await queryAsync(imageUrl, [imageId]);
+//       return result[0].url;
+//     });
+
+//     const images = await Promise.all(promises);
+//     const data = {
+//       ...food,
+//       images: images,
+//     };
+
+//     return res.status(200).json({ status: true, data });
+//   } catch (e) {
+//     console.error(e);
+//     return res
+//       .status(500)
+//       .json({ status: false, msg: "Internal Server Error" });
+//   }
+// };
+
 exports.get_food_by_res = async (req, res, next) => {
   try {
     const { res_id } = req.query;
     const getQuery = `
       SELECT d.*, 
-             u.id AS restaurant_id, u.name AS restaurant_name
+             u.id AS restaurant_id, u.name AS restaurant_name,
+             fc.name AS cat_name
       FROM food d
-      INNER JOIN restaurants u ON d.res_id = u.id WHERE res_id = ?
+      INNER JOIN restaurants u ON d.res_id = u.id
+      LEFT JOIN food_cat fc ON d.cat_id = fc.id WHERE d.res_id = ?
     `;
 
     const food = await queryAsync(getQuery, [res_id]);
 
-    const ImagesIds = food[0].images ? JSON.parse(food[0].images) : [];
-    let promises = [];
+    const data = await Promise.all(
+      food.map(async (item) => {
+        const ImagesIds = item.images ? JSON.parse(item.images) : [];
+        const promises = ImagesIds.map(async (imageId) => {
+          const imageUrlQuery = `SELECT url FROM images WHERE id = ?`;
+          const result = await queryAsync(imageUrlQuery, [imageId]);
+          return result[0].url;
+        });
 
-    console.log("roomImagesIds", ImagesIds);
+        const images = await Promise.all(promises);
 
-    promises = ImagesIds.map(async (imageId) => {
-      const imageUrl = `SELECT url FROM images WHERE id = ?`;
-      const result = await queryAsync(imageUrl, [imageId]);
-      return result[0].url;
-    });
-
-    const images = await Promise.all(promises);
-    const data = {
-      ...food[0],
-      images: images,
-    };
+        return {
+          ...item,
+          images: images,
+        };
+      })
+    );
 
     return res.status(200).json({ status: true, data });
   } catch (e) {
@@ -250,9 +332,11 @@ exports.get_food_by_food = async (req, res, next) => {
     const { food_id } = req.query;
     const getQuery = `
       SELECT d.*, 
-             u.id AS restaurant_id, u.name AS restaurant_name
+             u.id AS restaurant_id, u.name AS restaurant_name,
+             fc.name AS cat_name
       FROM food d
-      INNER JOIN restaurants u ON d.res_id = u.id WHERE d.id = ?
+      INNER JOIN restaurants u ON d.res_id = u.id
+      LEFT JOIN food_cat fc ON d.cat_id = fc.id WHERE d.id = ?
     `;
 
     const food = await queryAsync(getQuery, [food_id]);

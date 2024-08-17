@@ -37,12 +37,12 @@ exports.Register = async (req, res, next) => {
             referCode,
             myReferCode,
             verificationCode,
-            country,
             0,
             0,
             0,
             0,
-            0
+            0,
+            country
           )
           .then((result2) => {
             // registerModel
@@ -92,12 +92,12 @@ exports.Register = async (req, res, next) => {
             password,
             verificationCode,
             myReferCode,
-            country,
             0,
             0,
             0,
             0,
-            0
+            0,
+            country
           )
           .then((result) => {
             // let data = {

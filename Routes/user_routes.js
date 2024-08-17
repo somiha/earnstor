@@ -42,8 +42,17 @@ const food = require("../Controllers/User Controllers/food_controller");
 const car = require("../Controllers/User Controllers/car_controller");
 const percel_delivery = require("../Controllers/User Controllers/percel_delivery_controller");
 const message = require("../Controllers/User Controllers/message_controller");
+const hajj_agency = require("../Controllers/User Controllers/hajj_agency_controller");
+const level = require("../Controllers/User Controllers/level_controller");
+const book = require("../Controllers/User Controllers/book_controller");
+const sport_news = require("../Controllers/User Controllers/sport_news_controller");
+const quiz = require("../Controllers/User Controllers/quiz_controller");
+const organization = require("../Controllers/User Controllers/organization_controller");
+const chat = require("../Controllers/User Controllers/admin_chat");
+const streaming_hub = require("../Controllers/User Controllers/streaming_hub");
+const course_cat = require("../Controllers/User Controllers/course_cat");
 const multiUpload = require("../middleware/multiupload");
-
+const falshSell = require("../Controllers/User Controllers/ecom-controller");
 // Use of express Router
 const router = express.Router();
 
@@ -68,7 +77,7 @@ router.post("/resend-verification", verificationController.resend_verification);
 router.post("/login", loginController.Login);
 router.post("/forgot-pass", forgotPasswordController.ForgotPassword);
 
-router.patch("/edit-user", editUserController.EditUser);
+router.post("/edit-user", upload.single("image"), editUserController.EditUser);
 router.patch(
   "/user-pic",
   upload.single("image"),
@@ -135,11 +144,12 @@ router.get("/get-popular-course", online_course.get_popular_course);
 
 router.post("/add-pdf", upload.fields([{ name: "image" }]), pdf.pdf);
 router.get("/get-pdf", pdf.get_pdf);
-
+router.get("/get-pdf-id", pdf.get_pdf_id);
 router.post("/buy-pdf", pdf.buy_pdf);
 router.get("/get-buy-pdf", pdf.get_buy_pdf);
 
 router.post("/add-hotel", upload.fields([{ name: "image" }]), hotel.add_hotel);
+router.post("/add-review", hotel.add_review);
 router.get("/get-all-hotel", hotel.get_hotel);
 
 router.get("/get-hotel", hotel.get_hotel_by_id);
@@ -180,7 +190,8 @@ router.post(
 );
 
 router.get("/get-agency-package", agency.get_agency_package);
-
+router.get("/get-all-agency-package", agency.get_all_agency_package);
+router.get("/get-agency-package-id", agency.get_agency_package_id);
 router.post("/book-agency-package", agency.book_agency);
 router.get("/get-book-agency-package", agency.get_booked_agency_package);
 
@@ -331,8 +342,9 @@ router.post("/run-ad", ad.run_ad);
 router.get("/get-ad", ad.get_ad);
 
 router.post("/add-packages", ad.add_package);
-
+router.post("/select-package", ad.select_package);
 router.get("/get-packages", ad.get_package);
+router.get("/get-select-package", ad.getSelectedPackageByUserId);
 
 router.post("/profile-update", profile.profile_update);
 
@@ -399,6 +411,7 @@ router.post(
 );
 
 router.get("/get-delivery-company", percel_delivery.get_delivery_company);
+router.get("/get-delivery-company-id", percel_delivery.get_delivery_company_id);
 
 router.post("/add-order-percel", percel_delivery.add_order);
 
@@ -419,6 +432,169 @@ router.get("/get-message", message.get_messages);
 router.post("/group-conversations", message.add_group_conversation);
 router.post("/group-messages", message.add_group_message);
 router.get("/group-conversations", message.get_group_messages);
+router.get("/group-conversations-user", message.get_groups_by_user);
+
+router.get("/group", message.get_group_conversation);
+
+router.post(
+  "/add-hajj-agency",
+  upload.fields([{ name: "image" }]),
+  hajj_agency.add_agency
+);
+
+router.get("/get-hajj-agencys", hajj_agency.get_agencys);
+
+router.post(
+  "/add-hajj-agency-package",
+  upload.fields([{ name: "image" }]),
+  hajj_agency.add_hajj_agency_package
+);
+
+router.get("/get-hajj-agency-package", hajj_agency.get_hajj_agency_package);
+
+router.post("/book-hajj-agency-package", hajj_agency.book_agency);
+router.get(
+  "/get-book-hajj-agency-package",
+  hajj_agency.get_booked_hajj_agency_package
+);
+
+router.post("/add-level", level.level);
+
+router.get("/get-level", level.get_level);
+
+router.post("/delete-level", level.delete);
+
+router.get("/flash-sell", falshSell.flashSell);
+
+router.get("/hot-product", falshSell.hot_product);
+
+router.get("/product-details", falshSell.get_product_details);
+
+router.get("/all-product", falshSell.all_product);
+
+router.get("/product-by-cat-id", falshSell.get_product_details_by_category);
+
+router.post("/add-book-cat", book.add_book_cat);
+router.post("/add-book", upload.fields([{ name: "image" }]), book.add_book);
+router.get("/get-book-cat", book.get_book_cat);
+router.get("/get-book", book.get_all_book);
+router.get("/get-book-by-cat", book.get_book_by_cat);
+router.get("/get-book-by-id", book.get_book_by_book_id);
+router.post("/add-book-order", book.add_order);
+router.get("/get-book-order", book.get_order_by_user_id);
+
+router.post(
+  "/add-sport-news",
+  upload.fields([{ name: "image" }]),
+  sport_news.add_sport_news
+);
+router.get("/get-sport-news", sport_news.get_all_sport_news);
+
+router.get("/get-sport-news-by-id", sport_news.get_sport_news_by_id);
+
+router.post("/add-quiz", quiz.add_quiz);
+
+router.get("/get-quiz", quiz.get_quiz);
+
+router.post("/submit-quiz", quiz.submitQuiz);
+
+router.post(
+  "/add-org",
+  upload.fields([{ name: "image" }]),
+  organization.addOrganization
+);
+
+router.post(
+  "/add-project",
+  upload.fields([{ name: "image" }]),
+  organization.addProjects
+);
+
+router.post(
+  "/add-donate",
+  upload.fields([{ name: "image" }]),
+  organization.addDonate
+);
+
+router.post("/add-org-donation", organization.addOrgDonation);
+
+router.get("/get-org-donation-user", organization.getOrgDonationByUserId);
+
+router.get("/get-donate-project", organization.getDonateByProjectId);
+
+router.get("/get-project-org", organization.getProjectsByOrgId);
+
+router.get("/get-org", organization.getOrganizations);
+
+router.post("/send-message", chat.sendMessage);
+router.post("/start-chat", chat.startChat);
+router.get("/get-chat", chat.getChatDetails);
+router.get("/get-customer-chat", chat.getCustomerChats);
+router.get("/get-chat-list", chat.getAdminChats);
+
+router.post(
+  "/add-streaming-hub",
+  upload.fields([{ name: "image" }]),
+  streaming_hub.addStreamingHub
+);
+
+router.post(
+  "/add-streaming-hub-link",
+  upload.fields([{ name: "image" }]),
+  streaming_hub.addStreamingHubLink
+);
+
+router.get("/get-streaming-hub-link", streaming_hub.getStreamingHubLinks);
+
+router.get("/get-streaming-hub", streaming_hub.getStreamingHubs);
+
+router.post(
+  "/add-course-cat",
+  upload.fields([{ name: "image" }]),
+  course_cat.addCourseCategory
+);
+
+router.post("/add-course-details", course_cat.addCourseDetails);
+
+router.post(
+  "/add-course",
+  upload.fields([{ name: "image" }, { name: "video" }]),
+  course_cat.addCourse
+);
+
+router.post(
+  "/add-instructor",
+  upload.fields([{ name: "image" }]),
+  course_cat.addInstructor
+);
+
+router.post(
+  "/add-course-container",
+  upload.fields([{ name: "image" }]),
+  course_cat.addCourseContainer
+);
+router.post(
+  "/add-course-video",
+  upload.fields([{ name: "video" }]),
+  course_cat.addCourseVideo
+);
+
+router.get("/get-course-video", course_cat.getAllCourseVideo);
+
+router.get("/get-course-cat", course_cat.getAllCourseCategories);
+
+router.get("/get-course", course_cat.getAllCourses);
+
+router.get("/get-course-id", course_cat.getCoursesByCatId);
+
+router.get("/get-course-details", course_cat.getCourseDetailsById);
+
+router.get("/get-instructor", course_cat.getInstructors);
+
+router.get("/get-course-container", course_cat.getCourseContainers);
+
+router.post("/add-course-order", course_cat.add_order);
+router.get("/get-course-order", course_cat.getCourseOrdersByUserId);
 
 // Exports
 module.exports = router;

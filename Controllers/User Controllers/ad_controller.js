@@ -26,8 +26,9 @@ exports.ad_package = async (req, res, next) => {
 
 exports.get_ad_package = async (req, res, next) => {
   try {
-    const getQuery = `SELECT * FROM ad_package`;
-    const ad_packages = await queryAsyncWithoutValue(getQuery);
+    const { ad_cat_id } = req.query;
+    const getQuery = `SELECT * FROM ad_package WHERE ad_cat_id = ?`;
+    const ad_packages = await queryAsync(getQuery, [ad_cat_id]);
 
     return res.status(200).json({ status: true, ad_packages });
   } catch (e) {
@@ -114,8 +115,9 @@ exports.run_ad = async (req, res, next) => {
 
 exports.get_ad = async (req, res, next) => {
   try {
-    const getQuery = `SELECT * FROM run_ad`;
-    const ad_packages = await queryAsyncWithoutValue(getQuery);
+    const { package_id } = req.query;
+    const getQuery = `SELECT * FROM run_ad WHERE ad_package_id = ?`;
+    const ad_packages = await queryAsync(getQuery, [package_id]);
 
     return res.status(200).json({ status: true, ad_packages });
   } catch (e) {
@@ -136,6 +138,51 @@ exports.add_package = async (req, res, next) => {
     await queryAsync(addPackageTypeQuery, [package_name, description, price]);
     return res.status(200).json({
       msg: "Package added successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(503).json({ msg: "Internal Server Error" });
+  }
+};
+
+exports.select_package = async (req, res, next) => {
+  try {
+    let user_id = req.body.user_id;
+    let package_id = req.body.package_id;
+
+    const selectPackageQuery = `INSERT INTO select_package (user_id, package_id) VALUES (?, ?)`;
+    await queryAsync(selectPackageQuery, [user_id, package_id]);
+    return res.status(200).json({
+      msg: "Package added successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(503).json({ msg: "Internal Server Error" });
+  }
+};
+
+exports.getSelectedPackageByUserId = async (req, res, next) => {
+  try {
+    const { user_id } = req.query;
+
+    const getPackageQuery = `
+      SELECT sp.*, bp.package_name AS package_name
+      FROM select_package sp
+      JOIN buy_package bp ON sp.package_id = bp.id
+      WHERE sp.user_id = ?
+    `;
+
+    const selectedPackage = await queryAsync(getPackageQuery, [user_id]);
+
+    if (selectedPackage.length === 0) {
+      return res.status(404).json({
+        msg: "No package found for this user",
+      });
+    }
+
+    return res.status(200).json({
+      msg: "Package retrieved successfully",
+      package: selectedPackage[0],
     });
   } catch (err) {
     console.log(err);
